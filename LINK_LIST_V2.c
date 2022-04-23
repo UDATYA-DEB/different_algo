@@ -11,14 +11,21 @@ struct node *start = NULL;
 void create(int);
 void insert_beg();
 void insert_end();
-void disp();
+void disp(struct node*);
 void insert_bw();
 void insert_after_node();
 int node_count();
 void delete_node();
 void delete_node_first();
 void delete_node_last();
-void disp_rev();
+void disp_rev(struct node*);
+// void disp_rev();
+
+// struct node* allocate_mem(struct node *x)
+// {
+// 	x = (struct node*)malloc(sizeof(struct node));
+// 	return x;
+// }
 
 void main()
 {
@@ -68,9 +75,9 @@ void main()
 						break;
 			case 8:		delete_node_last();
 						break;
-			case 9:		disp_rev();
+			case 9:		disp_rev(start);
 						break;
-			case 10:	disp();
+			case 10:	disp(start);
 						break;
 			
 			default:	printf("\nInvalid input\n");	
@@ -81,7 +88,8 @@ void main()
 void create(int no_of_nodes)
 {
 	struct node *p;
-	p = (struct node*)malloc(sizeof(struct node*));
+	p = (struct node*)malloc(sizeof(struct node));
+	//allocate_mem(p);
 	start = p;
 	
 	int item0 = 0, item = 0;
@@ -105,14 +113,14 @@ void create(int no_of_nodes)
 
 void insert_beg()
 {
-	struct node *p = start, *temp;
+	struct node *temp;
 	int item = 0;
-	temp = (struct node*)malloc(sizeof(struct node*));
+	temp = (struct node*)malloc(sizeof(struct node));
 	printf("Enter the data: ");
 	scanf("%d", &item);
 	
 	temp -> data = item;
-	temp -> next = p;
+	temp -> next = start;
 	start = temp;
 }
 
@@ -194,69 +202,132 @@ void insert_after_node()
 void delete_node()
 {
 	int node_num = 0;
-	struct node *p = start;
+	struct node *p = start, *temp;
 	printf("Enter node number: ");
 	scanf("%d", &node_num);
-	
-	for (int i = 1; i < node_num - 1; i++)
-	{
-		p = p -> next;
+	if (node_num == 1){
+		delete_node_first();
 	}
-	
-	p -> next = (p -> next) -> next;
+	else
+	{
+		for (int i = 1; i < node_num - 1; i++)
+		{
+			p = p -> next;
+		}
+		temp = p -> next;
+		p -> next = (p -> next) -> next;
+
+		free(temp);
+	}
 }
 
 void delete_node_first()
 {
 	struct node *p = start;
 	start = p -> next;
+	free(p);
 }
 
 void delete_node_last()
 {
-	struct node *p = start;
+	struct node *p = start, *temp;
 	int no_of_nodes = node_count();
-	
+	if (no_of_nodes == 1)
+	{
+		delete_node_first();
+		return;
+	}
 	for (int i = 1; i < no_of_nodes-1; i++)
 	{
 		p = p -> next;
 	}
-	
+	temp = p -> next;
 	p -> next = NULL;
+
+	free(temp);
 }
 
-void disp()
+// void disp()															// printing link list
+// {
+// 	struct node *p = start;
+// 	if (p == NULL)
+// 	{
+// 		printf("No link list found.");
+// 	}
+// 	else
+// 	{
+// 		while(p != NULL)
+// 		{
+// 			printf("%d --> ", p -> data);
+// 			p = p -> next;
+// 		}
+// 		printf("NULL");
+// 	}
+// }
+
+void disp(struct node *p)													// recursion of printing link list
 {
-	struct node *p = start;
-	if (p == NULL)
-	{
-		printf("No link list found.");
-	}
-	else
-	{
-		while(p != NULL)
-		{
-			printf("%d --> ", p -> data);
-			p = p -> next;
-		}
+	if (p == NULL){
 		printf("NULL");
+		return;
 	}
+	printf("%d --> ", p->data);
+	disp(p->next);
 }
 
-void disp_rev()
+// void disp_rev(struct node *p)											// printing link list in reverse order
+// {
+// 	if (p == NULL){
+// 		printf("NULL");
+// 		return;
+// 	}
+// 	disp_rev(p->next);
+// 	printf(" <-- %d", p->data);
+	
+// }
+
+// void disp_rev()
+// {
+// 	int node_num = node_count();
+// 	struct node *p;
+// 	printf("NULL ");
+// 	for (int i = 1; i <= node_num; i++)
+// 	{
+// 		p = start;
+// 		for (int j = 1; j <= node_num - i; j++)
+// 		{
+// 			p = p -> next;
+// 		}
+// 		printf("<-- %d ", p -> data);	
+// 	}
+// }
+
+// void disp_rev()																// iteration of reverse link list
+// {
+// 	struct node *p = start, *prev = NULL, *next = NULL;
+// 	while (p != NULL)
+// 	{
+// 		next = p -> next;
+// 		p -> next = prev;
+// 		prev = p;
+// 		p = next;
+// 	}
+
+// 	start = prev;
+// }
+
+void disp_rev(struct node *p)													// recursion of reverse link list
 {
-	int node_num = node_count();
-	struct node *p;
-	printf("NULL ");
-	for (int i = 1; i <= node_num; i++)
+	if (p->next == NULL)
 	{
-		p = start;
-		for (int j = 1; j <= node_num - i; j++)
-		{
-			p = p -> next;
-		}
-		printf("<-- %d ", p -> data);	
+		start = p;
+		return;
 	}
+	disp_rev(p->next);
+
+	struct node *q = p->next;
+	q -> next = p;
+	p -> next = NULL;
 }
 
 int node_count()
