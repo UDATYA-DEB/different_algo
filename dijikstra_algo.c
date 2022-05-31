@@ -52,7 +52,7 @@ int main()
         printf(" %d ", i);
     }
     printf("\n");
-    int edge_n = 0, exit_v = 0;;
+    int edge_n = 0, exit_v = 0;
     printf("Enter number of edges: ");
     scanf("%d", &edge_n);
     printf("\n");
